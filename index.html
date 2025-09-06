@@ -1,110 +1,36 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<title>Mini Mundo Virtual - Preview</title>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    display: flex;
-    height: 100vh;
-    background-color: #e0f7fa;
-  }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nome Indie Gigante</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to right, #1e3c72, #2a5298); /* fundo bonito */
+      color: #fff;
+      font-family: 'Segoe UI', 'Verdana', 'Helvetica', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      height: 100vh;
+      overflow-y: scroll;
+      padding: 20px;
+    }
 
-  #game-container {
-    flex: 2;
-    background-color: #a7d7f9;
-    position: relative;
-    overflow: hidden;
-  }
-
-  #player {
-    width: 40px;
-    height: 40px;
-    background-color: red;
-    position: absolute;
-    top: 100px;
-    left: 100px;
-    border-radius: 5px;
-  }
-
-  #chat-container {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    border-left: 2px solid #0097a7;
-    background-color: #ffffff;
-  }
-
-  #messages {
-    flex: 1;
-    padding: 10px;
-    overflow-y: auto;
-  }
-
-  #chat-input {
-    display: flex;
-  }
-
-  #chat-input input {
-    flex: 1;
-    padding: 10px;
-    border: none;
-    border-top: 2px solid #0097a7;
-  }
-
-  #chat-input button {
-    padding: 10px;
-    border: none;
-    background-color: #0097a7;
-    color: white;
-    cursor: pointer;
-  }
-</style>
+    .nome-gigante {
+      font-size: 18px;
+      line-height: 1.6;
+      max-width: 1000px;
+      white-space: pre-wrap;
+      text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
+    }
+  </style>
 </head>
 <body>
-
-<div id="game-container">
-  <div id="player"></div>
-</div>
-
-<div id="chat-container">
-  <div id="messages"></div>
-  <div id="chat-input">
-    <input type="text" id="msg" placeholder="Digite sua mensagem...">
-    <button onclick="sendMessage()">Enviar</button>
+  <div class="nome-gigante">
+SkyboundDreamerShadowLeapCrystalFallsWhisperingForestMoonlitCavernsStarboundEchoesGoldenValeMysticHollowTwilightSpringsSunsetSpireFrostwindPeakLuminousGladeSilverstreamHollowEchoDriftwoodMazeThundercliffWanderingWillowAuroraGlimmerstoneFireflyHavenCloudspireLabyrinthineMeadowEmberlightSanctuarySilentRidgeObsidianPathwayShimmeringValeMoonstoneBridgeVerdantHollowCelestialFallsWindwhisperCavernousPeakFablegroveDreamspireTwilightHavenStarfallMeadowSunfireHollowCrystalspireWanderlustGroveSkyboundDreamerShadowLeapCrystalFallsWhisperingForestMoonlitCavernsStarboundEchoesGoldenValeMysticHollowTwilightSpringsSunsetSpireFrostwindPeakLuminousGladeSilverstreamHollowEchoDriftwoodMazeThundercliffWanderingWillowAuroraGlimmerstoneFireflyHavenCloudspireLabyrinthineMeadowEmberlightSanctuarySilentRidgeObsidianPathwayShimmeringValeMoonstoneBridgeVerdantHollowCelestialFallsWindwhisperCavernousPeakFablegroveDreamspireTwilightHavenStarfallMeadowSunfireHollowCrystalspireWanderlustGrove
   </div>
-</div>
-
-<script>
-  // Movimento do personagem
-  const player = document.getElementById('player');
-  let posX = 100;
-  let posY = 100;
-
-  document.addEventListener('keydown', (e) => {
-    const step = 10;
-    if(e.key === "ArrowUp") posY -= step;
-    if(e.key === "ArrowDown") posY += step;
-    if(e.key === "ArrowLeft") posX -= step;
-    if(e.key === "ArrowRight") posX += step;
-    player.style.top = posY + "px";
-    player.style.left = posX + "px";
-  });
-
-  // Chat local (preview sem backend)
-  const messagesDiv = document.getElementById('messages');
-  function sendMessage() {
-    const input = document.getElementById('msg');
-    if(input.value.trim() === "") return;
-    const msgEl = document.createElement('div');
-    msgEl.textContent = "Você: " + input.value;
-    messagesDiv.appendChild(msgEl);
-    messagesDiv.scrollTop = messagesDiv.scrollHeight;
-    input.value = "";
-  }
-</script>
-
 </body>
 </html>
