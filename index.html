@@ -5,20 +5,83 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Plataformer Indie com Chat</title>
 <style>
-  body { margin:0; padding:0; font-family:sans-serif; background:#1e1e2f; color:#fff; overflow:hidden; }
-  #gameContainer { position:relative; width:100vw; height:80vh; background:#2e2e3f; overflow:hidden; }
-  #player { position:absolute; width:50px; height:50px; background:#ff5555; bottom:0; left:50px; }
-  #chatContainer {
-    position:absolute; bottom:0; left:0; width:100%; height:20vh;
-    background:#1a1a2e; display:flex; flex-direction:column;
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(to bottom, #1e3c72, #2a5298);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
   }
-  #messages { flex:1; padding:10px; overflow-y:auto; font-size:14px; }
-  #inputContainer { display:flex; border-top:1px solid #333; }
-  #chatInput { flex:1; padding:8px; border:none; outline:none; background:#2a2a44; color:#fff; }
-  #sendBtn { padding:8px 12px; background:#5555ff; border:none; cursor:pointer; color:#fff; }
-  .msg { margin-bottom:5px; }
-  .playerMsg { color:#aaffaa; }
-  .botMsg { color:#ffdd55; }
+
+  #gameContainer {
+    position: relative;
+    flex: 1;
+    background: #2e2e3f;
+    overflow: hidden;
+  }
+
+  .platform {
+    position: absolute;
+    background: #ffcc00;
+    border-radius: 5px;
+  }
+
+  #player {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background: #ff5555;
+    bottom: 0;
+    left: 50px;
+    border-radius: 10px;
+  }
+
+  #chatContainer {
+    height: 25%;
+    background: #1a1a2e;
+    display: flex;
+    flex-direction: column;
+  }
+
+  #messages {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+    font-size: 14px;
+  }
+
+  #inputContainer {
+    display: flex;
+    border-top: 1px solid #333;
+  }
+
+  #chatInput {
+    flex: 1;
+    padding: 8px;
+    border: none;
+    outline: none;
+    background: #2a2a44;
+    color: #fff;
+  }
+
+  #sendBtn {
+    padding: 8px 12px;
+    background: #5555ff;
+    border: none;
+    cursor: pointer;
+    color: #fff;
+  }
+
+  .msg {
+    margin-bottom: 5px;
+  }
+
+  .playerMsg { color: #aaffaa; }
+  .otherMsg { color: #ffdd55; }
+
 </style>
 </head>
 <body>
@@ -36,56 +99,103 @@
 </div>
 
 <script>
-// --- Player movimento simples ---
+// === Player & Física ===
 const player = document.getElementById('player');
-let playerPos = { x:50, y:0 };
+let playerPos = { x: 50, y: 0 };
 let velY = 0;
-const gravity = 0.5;
+const gravity = 0.7;
 const keys = {};
 
-document.addEventListener('keydown', e => keys[e.key] = true);
-document.addEventListener('keyup', e => keys[e.key] = false);
+// Plataformas
+const gameContainer = document.getElementById('gameContainer');
+const platforms = [
+  {x:0, y:0, w:gameContainer.clientWidth, h:20}, // chão
+  {x:150, y:100, w:150, h:20},
+  {x:350, y:200, w:120, h:20},
+  {x:550, y:150, w:180, h:20},
+  {x:750, y:250, w:130, h:20},
+];
 
-function gameLoop() {
-  // Movimento horizontal
+function createPlatforms(){
+  platforms.forEach(p=>{
+    const div = document.createElement('div');
+    div.className = 'platform';
+    div.style.left = p.x + 'px';
+    div.style.bottom = p.y + 'px';
+    div.style.width = p.w + 'px';
+    div.style.height = p.h + 'px';
+    gameContainer.appendChild(div);
+    p.el = div; // referência pro colisão
+  });
+}
+createPlatforms();
+
+document.addEventListener('keydown', e=>keys[e.key]=true);
+document.addEventListener('keyup', e=>keys[e.key]=false);
+
+function checkCollision(px, py){
+  for(let p of platforms){
+    if(px + 50 > p.x && px < p.x + p.w && py <= p.y + p.h && py + 50 >= p.y){
+      return p.y + p.h;
+    }
+  }
+  return null;
+}
+
+function gameLoop(){
+  // Horizontal
   if(keys['ArrowLeft']) playerPos.x -=5;
   if(keys['ArrowRight']) playerPos.x +=5;
 
-  // Gravidade e pulo
-  velY += gravity;
+  // Gravidade
+  velY -= gravity; // eixo Y cresce para cima
   playerPos.y += velY;
-  if(playerPos.y > 0){ playerPos.y = 0; velY=0; } // chão
-  if(keys['ArrowUp'] && playerPos.y ===0) velY = -10;
+
+  // Colisão
+  const colY = checkCollision(playerPos.x, playerPos.y);
+  if(colY !== null && velY < 0){
+    playerPos.y = colY;
+    velY = 0;
+  }
+
+  // Limites da tela
+  if(playerPos.x <0) playerPos.x=0;
+  if(playerPos.x>gameContainer.clientWidth-50) playerPos.x=gameContainer.clientWidth-50;
+  if(playerPos.y<0) playerPos.y=0;
 
   player.style.left = playerPos.x + 'px';
   player.style.bottom = playerPos.y + 'px';
+
   requestAnimationFrame(gameLoop);
 }
 gameLoop();
 
-// --- Chat simples ---
+// Pulo
+document.addEventListener('keydown', e=>{
+  if(e.key==='ArrowUp'){
+    const colY = checkCollision(playerPos.x, playerPos.y);
+    if(colY !== null) velY = 12;
+  }
+});
+
+// === Chat ===
 const messagesDiv = document.getElementById('messages');
 const chatInput = document.getElementById('chatInput');
 const sendBtn = document.getElementById('sendBtn');
 
-function addMessage(text, type='player') {
+function addMessage(text, type='player'){
   const div = document.createElement('div');
-  div.className = 'msg ' + (type==='player'?'playerMsg':'botMsg');
+  div.className = 'msg ' + (type==='player'?'playerMsg':'otherMsg');
   div.textContent = text;
   messagesDiv.appendChild(div);
   messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
 
-// Simulação de bot
-function botReply(msg){
-  setTimeout(()=>addMessage('Bot: '+msg.split('').reverse().join(''), 'bot'), 500);
-}
-
+// Simulação de chat real (pode substituir pelo backend)
 sendBtn.addEventListener('click', ()=>{
   const msg = chatInput.value.trim();
-  if(msg==='') return;
+  if(!msg) return;
   addMessage(msg, 'player');
-  botReply(msg);
   chatInput.value='';
 });
 chatInput.addEventListener('keypress', e=>{
